@@ -21,10 +21,14 @@ class AuthServiceProvider extends ServiceProvider
      * Register any authentication / authorization services.
      */
     public function boot(): void
-    {
+    {       
         view()->composer('*', function ($view) {
-            $currentUser = Auth::user();
-            $view->with('currentUser', $currentUser);
+            if (Auth::check()) 
+            {
+                $currentUser = Auth::user();
+                $logged_in_user_uuid = $currentUser->uuid;
+                $view->with('logged_in_user_uuid', $logged_in_user_uuid);
+            } 
         });
     }
 }

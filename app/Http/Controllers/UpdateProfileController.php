@@ -10,10 +10,18 @@ class UpdateProfileController extends Controller
 {
    public function UpdateInfo(Request $request)
    {
-      $id = json_decode((request()->id), true);
+
+      $uuid = request()->uuid;
+      $id = DB::table('users')
+                ->where('uuid', '=', $uuid)
+                ->get('id');
+      $id =$id->pluck('id')->first();
+                 
+      $uuid = implode($request->all('uuid'));
       $first_name = implode($request->all('first-name'));
       $last_name = implode($request->all('last-name'));
       $email = implode($request->all('email'));
+      $user_name = implode($request->all('user_name'));
       $password = implode($request->all('password'));
       $bio = implode($request->all('bio'));
 
@@ -25,6 +33,7 @@ class UpdateProfileController extends Controller
                   'firstname' => $first_name,
                   'lastname' => $last_name,
                   'email' => $email,
+                  'user_name' => $user_name,
                   'password' => Hash::make($password),
                   'bio' => $bio
                 ]);
@@ -36,14 +45,16 @@ class UpdateProfileController extends Controller
              'firstname' => $first_name,
              'lastname' => $last_name,
              'email' => $email,
+             'user_name' => $user_name,
              'bio' => $bio
            ]);
       }
+      
+      $uuid = request()->uuid;
       echo "<h2>Your Information Updated Successfully</h2>";           
       ob_flush();
       flush();
       sleep(1); // Adjust the duration as needed
-      return redirect('/profile/'.$id);     
-           
+      return redirect('/profile/'.$uuid);             
    }
 }

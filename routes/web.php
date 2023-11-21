@@ -7,18 +7,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\EditProfileController;
 use App\Http\Controllers\UpdateProfileController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PostController;
 
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
+
 
 Route::get('/', [HomeController::class, 'Home']);
 
@@ -29,7 +21,13 @@ Route::get('/login', [LoginController::class, 'Login'])->name('login');
 Route::post('/login-post', [LoginController::class, 'LoginPost'])->name('login.post');
 Route::get('logout', [LoginController::class, 'Logout'])->name('logout');
 
-Route::get('/profile/{id}', [ProfileController::class, 'Profile']);
-Route::get('/profile/edit/{id}', [EditProfileController::class, 'EditProfile']);
-Route::post('/profile/edit-post/{id}', [UpdateProfileController::class, 'UpdateInfo']);
+Route::get('/profile/{uuid}', [ProfileController::class, 'Profile']);
+Route::get('/profile/edit/{uuid}', [EditProfileController::class, 'EditProfile'])->middleware('valid.editor');
+Route::post('/profile/edit-post/{uuid}', [UpdateProfileController::class, 'UpdateInfo']);
+
+Route::post('/post/store/{uuid}', [PostController::class, 'StorePost']);
+Route::get('/single-post/{uuid}', [PostController::class, 'SinglePost']);
+Route::get('/edit-post/{uuid}', [PostController::class, 'EditPost'])->middleware('valid.user');
+Route::post('/edit-post/store/{uuid}', [PostController::class, 'StoreEditPost']);
+Route::get('/delete-post/{uuid}', [PostController::class, 'DeletePost'])->middleware('valid.user');
 

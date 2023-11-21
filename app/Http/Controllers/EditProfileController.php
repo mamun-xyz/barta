@@ -12,12 +12,21 @@ class EditProfileController extends Controller
     {
         if(Auth::check())
         {
-            $id = json_decode((request()->id), true);
+            $uuid = request()->uuid;
+            $id = DB::table('users')
+                      ->where('uuid', '=', $uuid)
+                      ->get('id');
+
+            $id =$id->pluck('id')->first();
             $user_info = DB::table('users')
-                            ->find($id);
-        return view('edit-profile')->with('user_info', $user_info);
+                             ->find($id);
+
+            $user_info = DB::table('users')
+                             ->find($id);
+                            
+            return view('edit-profile')->with('user_info', $user_info);
         }else{
-            return redirect('login');
+                return redirect('login');
         }
     }
 }
