@@ -21,7 +21,7 @@ class AuthServiceProvider extends ServiceProvider
      * Register any authentication / authorization services.
      */
     public function boot(): void
-    {       
+    {
         view()->composer('*', function ($view) {
             if (Auth::check()) 
             {

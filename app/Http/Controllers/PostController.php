@@ -35,13 +35,53 @@ class PostController extends Controller
         $uuid = request()->uuid;
         $data = DB::table('posts')
                     ->join('users', 'posts.user_id', '=', 'users.id')
-                    ->select('posts.description', 'posts.view_count', 'posts.uuid', 'users.firstname', 'users.lastname', 'users.user_name', DB::raw('CAST(posts.updated_at AS datetime) as updated_at'))
+                    ->select('posts.id AS post_id', 'posts.description', 'posts.view_count', 'users.id AS user_id', 'users.uuid AS user_uuid', 'posts.uuid', 'users.firstname', 'users.lastname', 'users.user_name', DB::raw('CAST(posts.created_at AS datetime) as created_at'))
                     ->where('posts.uuid', $uuid)
                     ->orderBy('posts.created_at', 'desc')
                     ->get();  
 
-        return view('single-post')->with('data', $data)
-              ->withSuccess('You have Successfully loggedin');
+        $post_id = DB::table('posts')->where('uuid', $uuid)->value('id');
+        $comment_data = DB::table('comments')
+                       ->where('post_id', $post_id)
+                       ->join('users', 'comments.user_id', '=', 'users.id')
+                       ->select('comments.id','comments.user_id','comments.description', 'comments.created_at', 'users.uuid', 'users.firstname', 'users.lastname', 'users.user_name')
+                       ->orderBy('comments.created_at', 'desc')
+                       ->get(); 
+                       
+        $total_comment = DB::table('comments')
+                            ->where('post_id', $post_id)
+                            ->count();  
+
+                        //insert total comment    
+                        DB::table('posts')
+                            ->where('id', $post_id)
+                            ->update(['total_comment' => $total_comment]);
+
+        $current_user_id = Auth::user()->id;
+
+        // Check if the user has already viewed the post
+        $hasViewed = DB::table('posts')
+            ->where('id',$post_id)
+            ->where('viewed_by', $current_user_id)
+            ->exists();
+
+        if (!$hasViewed) {
+            // Update view count and mark the post as viewed by the user
+            DB::table('posts')
+                ->where('id', $post_id)
+                ->increment('view_count');
+
+            DB::table('posts')
+                ->where('id', $post_id)
+                ->update(['viewed_by' => $current_user_id]);
+            }       
+        return view('single-post')
+                    ->with('data', $data)
+                    ->with('comment_data', $comment_data)
+                    ->with('total_comment', $total_comment)
+                    ->with('current_user_id', $current_user_id)
+                    ->withSuccess('You have Successfully loggedin');
+ 
     }
 
     public function EditPost()

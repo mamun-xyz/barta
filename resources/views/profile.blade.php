@@ -188,6 +188,7 @@
             </div>
 
             <!-- Card Action Dropdown -->
+            @if($current_user_id == $user_info->user_id)
             <div
               class="flex flex-shrink-0 self-center"
               x-data="{ open: false }">
@@ -237,6 +238,7 @@
                 </div>
               </div>
             </div>
+            @endif
             <!-- /Card Action Dropdown -->
           </div>
         </header>
@@ -251,9 +253,9 @@
         </a>
         <!-- Date Created & View Stat -->
         <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
-          <span class="">15 hours ago</span>
+          <span class="">{{ \Carbon\Carbon::parse($user_info->created_at)->diffForHumans() }}</span>
           <span class="">•</span>
-          <span>4,450 views</span>
+          <span> {{$user_info->view_count}} views</span>
         </div>
 
         <!-- Barta Card Bottom -->
@@ -262,6 +264,9 @@
           <div class="flex items-center justify-between">
             <div class="flex gap-8 text-gray-600">
               <!-- Comment Button -->
+              <a 
+              href="{{url('single-post/'.$user_info->post_uuid)}}"
+              >
               <button
                 type="button"
                 class="-m-2 flex gap-2 text-xs items-center rounded-full p-2 text-gray-600 hover:text-gray-800">
@@ -278,9 +283,9 @@
                     stroke-linejoin="round"
                     d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
                 </svg>
-
-                <p>3</p>
+                <p>{{$user_info->total_comment }}</p>
               </button>
+              </a>
               <!-- /Comment Button -->
             </div>
           </div>

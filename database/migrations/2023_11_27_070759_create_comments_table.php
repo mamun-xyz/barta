@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('bio')->after('password')->nullable();
+        Schema::create('comments', function (Blueprint $table) {
+            $table->id();
+            $table->integer('user_id');
+            $table->integer('post_id');
+            $table->text('description');
+            $table->timestamp('created_at')->useCurrent();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('comments');
     }
 };

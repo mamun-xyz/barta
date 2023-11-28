@@ -40,7 +40,7 @@
       <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <form
           class="space-y-6"
-          action="{{ route('register.store') }}"
+          action="{{ route('register') }}"
           method="POST">
           @csrf
           <!-- First Name -->

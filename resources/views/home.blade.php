@@ -31,7 +31,7 @@
                 class="block w-full p-2 pt-2 text-gray-900 rounded-lg border-none outline-none focus:ring-0 focus:ring-offset-0"
                 name="barta"
                 rows="2"
-                placeholder="What's going on, {{  $user_name }}?"></textarea>
+                placeholder="What's going on, {{ $user_name  }}?"></textarea>
             </div>
           </div>
         </div>
@@ -62,6 +62,7 @@
         id="newsfeed"
         class="space-y-6">
         <!-- Barta Card -->
+        
         @foreach ($data as $data)
         <article
           class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-5 sm:px-6">
@@ -97,6 +98,7 @@
                 <!-- /User Info -->
               </div>
 
+              @if($current_user_id == $data->id )
               <!-- Card Action Dropdown -->
               <div
                 class="flex flex-shrink-0 self-center"
@@ -148,6 +150,7 @@
                 </div>
               </div>
               <!-- /Card Action Dropdown -->
+              @endif
             </div>
           </header>
 
@@ -173,7 +176,7 @@
             <span class="">•</span>
             <span>{{ $data->view_count }} views</span>
           </div>
-
+         
           <!-- Barta Card Bottom -->
           <footer class="border-t border-gray-200 pt-2">
             <!-- Card Bottom Action Buttons -->
@@ -181,7 +184,7 @@
               <div class="flex gap-8 text-gray-600">
                 <!-- Comment Button -->
                 <a
-                  href="#"
+                  href="{{url('single-post/'.$data->post_uuid)}}"
                   type="button"
                   class="-m-2 flex gap-2 text-xs items-center rounded-full p-2 text-gray-600 hover:text-gray-800">
                   <span class="sr-only">Comment</span>
@@ -196,9 +199,9 @@
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
-                  </svg>
-
-                  <p>0</p>
+                  </svg>  
+                  <p>{{ $data->total_comment }}</p>
+                
                 </a>
                 <!-- /Comment Button -->
               </div>
@@ -207,11 +210,11 @@
           </footer>
           <!-- /Barta Card Bottom -->
         </article>
+        @endforeach
         <!-- /Barta Card -->
         <!-- Barta Card -->
-        @endforeach
         <!-- /Barta Card -->
       </section>
       <!-- /Newsfeed -->
     </main>
-@endsection
+  @endsection

@@ -16,14 +16,14 @@
                 <!-- User Info -->
                 <div class="text-gray-900 flex flex-col min-w-0 flex-1">
                   <a
-                    href="#"
+                    href="{{url('/profile/'.$data[0]->user_uuid)}}"
                     class="hover:underline font-semibold line-clamp-1">
                     {{$data[0]->firstname}} {{$data[0]->lastname}}
                   </a>
                   @if( $data[0]->user_name ==! null )
                   <div class="flex items-center">
                       <span>@</span>
-                      <a href="#" 
+                      <a href="{{url('/profile/'.$data[0]->user_uuid)}}" 
                          class="hover:underline text-sm text-gray-500 line-clamp-1">
                         {{ $data[0]->user_name }}   
                       </a>
@@ -33,6 +33,7 @@
               </div>
 
               <!-- Card Action Dropdown -->
+              @if( $current_user_id ==  $data[0]->user_id)
               <div
                 class="flex flex-shrink-0 self-center"
                 x-data="{ open: false }">
@@ -82,6 +83,7 @@
                   </div>
                 </div>
               </div>
+              @endif
               <!-- /Card Action Dropdown -->
             </div>
           </header>
@@ -95,19 +97,20 @@
 
           <!-- Date Created & View Stat -->
           <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
-            <span class="">6 minutes ago</span>
+            <span class=""> {{ \Carbon\Carbon::parse($data[0]->created_at)->diffForHumans() }}</span>
             <span class="">•</span>
-            <span>3 comments</span>
+            <span>{{($total_comment)}} comments</span>
             <span class="">•</span>
-            <span>450 views</span>
+            <span> {{ $data[0]->view_count }}  views</span>
           </div>
 
           <hr class="my-6" />
 
           <!-- Barta Create Comment Form -->
           <form
-            action=""
+            action="{{ url('/store-comment/'.$data[0]->post_id) }}"
             method="POST">
+            @csrf
             <!-- Create Comment Card Top -->
             <div>
               <div class="flex items-start /space-x-3/">
@@ -161,88 +164,17 @@
 
         <hr />
         <div class="flex flex-col space-y-6">
-          <h1 class="text-lg font-semibold">Comments (3)</h1>
+          <h1 class="text-lg font-semibold">Comments {{($total_comment)}}</h1>
 
           <!-- Barta User Comments Container -->
           <article
             class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-2 sm:px-6 min-w-full divide-y">
             <!-- Comments -->
 
-            <!-- Comment 1 -->
-            <div class="py-4">
-              <!-- Barta User Comments Top -->
-              <header>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <!-- User Info -->
-                    <div class="text-gray-900 flex flex-col min-w-0 flex-1">
-                      <a
-                        href="profile.html"
-                        class="hover:underline font-semibold line-clamp-1">
-                        Al Nahian
-                      </a>
-
-                      <a
-                        href="profile.html"
-                        class="hover:underline text-sm text-gray-500 line-clamp-1">
-                        @alnahian2003
-                      </a>
-                    </div>
-                    <!-- /User Info -->
-                  </div>
-                </div>
-              </header>
-
-              <!-- Content -->
-              <div class="py-4 text-gray-700 font-normal">
-                <p>আজকে থেকে আমিও একজন PoorPHP ডেভেলপার 😂</p>
-              </div>
-
-              <!-- Date Created -->
-              <div class="flex items-center gap-2 text-gray-500 text-xs">
-                <span class="">6m ago</span>
-              </div>
-            </div>
-            <!-- /Comment 1 -->
-
-            <!-- Comment 2 -->
-            <div class="py-4">
-              <!-- Barta User Comments Top -->
-              <header>
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center space-x-3">
-                    <!-- User Info -->
-                    <div class="text-gray-900 flex flex-col min-w-0 flex-1">
-                      <a
-                        href="profile.html"
-                        class="hover:underline font-semibold line-clamp-1">
-                        Bruce Wayne
-                      </a>
-
-                      <a
-                        href="profile.html"
-                        class="hover:underline text-sm text-gray-500 line-clamp-1">
-                        @wayne
-                      </a>
-                    </div>
-                    <!-- /User Info -->
-                  </div>
-                </div>
-              </header>
-
-              <!-- Content -->
-              <div class="py-4 text-gray-700 font-normal">
-                <p>এখন থেকে শুধু টাকা কথা বলবে, টাকা 🤑</p>
-              </div>
-
-              <!-- Date Created -->
-              <div class="flex items-center gap-2 text-gray-500 text-xs">
-                <span class="">6m ago</span>
-              </div>
-            </div>
-            <!-- /Comment 2 -->
+           
 
             <!-- Comment 3 -->
+            @foreach($comment_data as $comment_data)
             <div class="py-4">
               <!-- Barta User Comments Top -->
               <header>
@@ -251,21 +183,24 @@
                     <!-- User Info -->
                     <div class="text-gray-900 flex flex-col min-w-0 flex-1">
                       <a
-                        href="profile.html"
+                        href="{{url('/profile/'.$comment_data->uuid)}}"
                         class="hover:underline font-semibold line-clamp-1">
-                        Ahmed Shamim Hasan Shaon
+                        {{($comment_data->firstname.' '.$comment_data->lastname)}}
                       </a>
 
+                      @if( $comment_data->user_name ==! null )
                       <a
-                        href="profile.html"
+                        href="{{url('/profile/'.$comment_data->uuid)}}"
                         class="hover:underline text-sm text-gray-500 line-clamp-1">
-                        @me_shaon
+                        <span>@</span>{{($comment_data->user_name)}}
                       </a>
+                      @endif
                     </div>
                     <!-- /User Info -->
                   </div>
 
                   <!-- Card Action Dropdown -->
+                  @if( $current_user_id == $comment_data->user_id)
                   <div
                     class="flex flex-shrink-0 self-center"
                     x-data="{ open: false }">
@@ -297,7 +232,7 @@
                         aria-labelledby="user-menu-button"
                         tabindex="-1">
                         <a
-                          href="#"
+                          href="{{ url('/update-comment/'.$comment_data->id) }}"
                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabindex="-1"
@@ -305,7 +240,7 @@
                           >Edit</a
                         >
                         <a
-                          href="#"
+                          href="{{ url('/delete-comment/'.$comment_data->id) }}"
                           class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                           role="menuitem"
                           tabindex="-1"
@@ -315,22 +250,24 @@
                       </div>
                     </div>
                   </div>
+                  @endif
                   <!-- /Card Action Dropdown -->
                 </div>
               </header>
+             
 
               <!-- Content -->
               <div class="py-4 text-gray-700 font-normal">
-                <p>PoorPHP vs Regular PHP 😎 Let the battle begin 💪</p>
+                <p>{{($comment_data->description)}}</p>
               </div>
 
               <!-- Date Created -->
               <div class="flex items-center gap-2 text-gray-500 text-xs">
-                <span class="">6m ago</span>
+                <span class="">{{ \Carbon\Carbon::parse($comment_data->created_at)->diffForHumans() }}</span>
               </div>
             </div>
             <!-- /Comment 3 -->
-
+            @endforeach
             <!-- /Comments -->
           </article>
           <!-- /Barta User Comments -->

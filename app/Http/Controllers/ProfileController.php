@@ -35,13 +35,16 @@ class ProfileController extends Controller
                                     'firstname',
                                     'lastname',
                                     'bio',
-                                ]);
+                                ]);                              
 
                 return view('profile')
                         ->with('user_info', $user_info)
-                        ->with('total_post', $total_post);                 
+                        ->with('total_post', $total_post);
+                                       
             }else
             {
+                $current_user_id = Auth::user()->id;
+
                 $user_info = DB::table('posts')
                                  ->join('users', 'posts.user_id', '=', 'users.id')
                                  ->where('user_id', $id)
@@ -49,9 +52,15 @@ class ProfileController extends Controller
                                  ->orderBy('posts.created_at', 'desc')
                                  ->get();
 
+                $total_comment = DB::table('posts')
+                                 ->where('user_id', $id)
+                                 ->get('total_comment');                 
+                                       
                 return view('profile')
                         ->with('user_info', $user_info)
-                        ->with('total_post', $total_post);
+                        ->with('total_post', $total_post)
+                        ->with('total_comment', $total_comment)  
+                        ->with('current_user_id', $current_user_id);  
             }
         }
             return redirect("login")->withSuccess('Opps! You do not have access');       

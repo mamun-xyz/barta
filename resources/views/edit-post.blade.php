@@ -61,8 +61,6 @@
             <!-- /Card Bottom Action Buttons -->
         </div>
         <!-- /Create Post Card Bottom -->
-
-
       </form>
       <!-- /Barta Create Post Card -->
     </main>
