@@ -17,9 +17,9 @@ class ValidEditor
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
-        $user_uuid = $user->uuid;             
+        $user_uuid = $user->user_uuid;             
         
-        $editor_uuid= request()->uuid;
+        $editor_uuid= request()->user_uuid;
                 
         if(  $user_uuid ==  $editor_uuid )
         {

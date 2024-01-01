@@ -16,14 +16,14 @@
                 <!-- User Info -->
                 <div class="text-gray-900 flex flex-col min-w-0 flex-1">
                   <a
-                    href="{{url('/profile/'.$data[0]->user_uuid)}}"
+                    href="{{url('/profile/'.$data[0]->user->user_uuid)}}"
                     class="hover:underline font-semibold line-clamp-1">
-                    {{$data[0]->firstname}} {{$data[0]->lastname}}
+                    {{$data[0]->user->firstname}} {{$data[0]->user->lastname}}
                   </a>
                   @if( $data[0]->user_name ==! null )
                   <div class="flex items-center">
                       <span>@</span>
-                      <a href="{{url('/profile/'.$data[0]->user_uuid)}}" 
+                      <a href="{{url('/profile/'.$data[0]->user->user_uuid)}}" 
                          class="hover:underline text-sm text-gray-500 line-clamp-1">
                         {{ $data[0]->user_name }}   
                       </a>
@@ -31,7 +31,7 @@
                   @endif
                 </div>
               </div>
-
+              
               <!-- Card Action Dropdown -->
               @if( $current_user_id ==  $data[0]->user_id)
               <div
@@ -65,7 +65,7 @@
                     aria-labelledby="user-menu-button"
                     tabindex="-1">
                     <a
-                      href="{{('/edit-post/'.$data[0]->uuid)}}"
+                      href="{{('/edit-post/'.$data[0]->post_uuid)}}"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       role="menuitem"
                       tabindex="-1"
@@ -73,7 +73,7 @@
                       >Edit</a
                     >
                     <a
-                      href="{{('/delete-post/'.$data[0]->uuid)}}"
+                      href="{{('/delete-post/'.$data[0]->post_uuid)}}"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       role="menuitem"
                       tabindex="-1"
@@ -90,6 +90,10 @@
 
           <!-- Content -->
           <div class="py-4 text-gray-700 font-normal">
+          <img
+              src="{{ $data[0]->image }} "
+              class="min-h-auto w-full rounded-lg object-cover max-h-64 md:max-h-72"
+              alt="" />
             <p>
             {{ $data[0]->description }} 
             </p>
@@ -108,7 +112,7 @@
 
           <!-- Barta Create Comment Form -->
           <form
-            action="{{ url('/store-comment/'.$data[0]->post_id) }}"
+            action="{{ url('/store-comment/'.$data[0]->id) }}"
             method="POST">
             @csrf
             <!-- Create Comment Card Top -->
@@ -183,16 +187,16 @@
                     <!-- User Info -->
                     <div class="text-gray-900 flex flex-col min-w-0 flex-1">
                       <a
-                        href="{{url('/profile/'.$comment_data->uuid)}}"
+                        href="{{url('/profile/'.$comment_data->user->user_uuid)}}"
                         class="hover:underline font-semibold line-clamp-1">
-                        {{($comment_data->firstname.' '.$comment_data->lastname)}}
+                        {{($comment_data->user->firstname.' '.$comment_data->user->lastname)}}
                       </a>
 
-                      @if( $comment_data->user_name ==! null )
+                      @if( $comment_data->user->user_name ==! null )
                       <a
-                        href="{{url('/profile/'.$comment_data->uuid)}}"
+                        href="{{url('/profile/'.$comment_data->user->user_uuid)}}"
                         class="hover:underline text-sm text-gray-500 line-clamp-1">
-                        <span>@</span>{{($comment_data->user_name)}}
+                        <span>@</span>{{($comment_data->user->user_name)}}
                       </a>
                       @endif
                     </div>

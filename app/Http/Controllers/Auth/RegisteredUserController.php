@@ -31,7 +31,7 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-       $uuid = Uuid::uuid4()->toString();
+       $user_uuid = Uuid::uuid4()->toString();
 
        $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
@@ -41,7 +41,7 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'uuid' => $uuid,
+            'user_uuid' => $user_uuid,
             'firstname' => $request->first_name,
             'lastname' => $request->last_name,
             'email' => $request->email,

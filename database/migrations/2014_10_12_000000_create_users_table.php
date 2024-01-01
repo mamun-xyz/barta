@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid');
+            $table->uuid('user_uuid');
             $table->string('user_name')->unique()->nullable();
             $table->string('firstname');
             $table->string('lastname');
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->boolean('is_block')->default(false);
             $table->rememberToken();
             $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent();              
+            $table->timestamp('updated_at')->useCurrent();         
         });
     }
 

@@ -8,14 +8,21 @@
         <div
           class="flex gap-4 justify-center flex-col text-center items-center">
           <!-- Avatar -->
-<!--          <div class="relative">-->
-<!--            <img-->
-<!--              class="w-32 h-32 rounded-full border-2 border-gray-800"-->
-<!--              src="https://avatars.githubusercontent.com/u/831997"-->
-<!--              alt="Ahmed Shamim" />-->
-<!--            <span-->
-<!--              class="bottom-2 right-4 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span>-->
-<!--          </div>-->
+         <div class="relative">
+            @if ($user_info[0]->image)
+            <img  
+              class="w-32 h-32 rounded-full border-2 border-gray-800"
+              src="{{ asset('storage/profile_photo/'. $user_info[0]->image) }}"
+              alt="Profile Picture" >
+            @else
+            <img 
+              class="w-32 h-32 rounded-full border-2 border-gray-800"
+              src="{{ asset('storage/profile_photo/'. 'placeholder.jpg') }}"
+              alt="Profile Picture">
+            @endif
+           <!-- <span
+             class="bottom-2 right-4 absolute w-3.5 h-3.5 bg-green-400 border-2 border-white dark:border-gray-800 rounded-full"></span> -->
+         </div>
           <!-- /Avatar -->
 
           <!-- User Meta -->
@@ -34,18 +41,13 @@
                 <h4 class="sm:text-xl font-bold">{{($total_post)}}</h4>
                 <p class="text-gray-600">Posts</p>
             </div>
-
             <!-- Total Friends Count -->
             <div class="flex flex-col justify-center items-center">
-                <h4 class="sm:text-xl font-bold">1,334</h4>
-                <p class="text-gray-600">Friends</p>
+            <h4 class="sm:text-xl font-bold">{{($total_comment)}}</h4>
+                <p class="text-gray-600">Comments</p>
             </div>
 
-            <!-- Total Followers Count -->
-            <div class="flex flex-col justify-center items-center">
-                <h4 class="sm:text-xl font-bold">18,589</h4>
-                <p class="text-gray-600">Followers</p>
-            </div>
+           
         </div>
 
         <!-- /Profile Stats -->
@@ -87,9 +89,19 @@
       <div>
         <div class="flex items-start space-x-3">
             <!-- User Avatar -->
-            <!-- <div class="flex-shrink-0">
-                <img class="h-10 w-10 rounded-full object-cover" src="https://avatars.githubusercontent.com/u/831997" alt="Ahmed Shamim" />
-            </div> -->
+            <div class="flex-shrink-0">
+            @if ($user_info[0]->image)
+            <img  
+              class="h-10 w-10 rounded-full object-cover"
+              src="{{ asset('storage/profile_photo/'. $user_info[0]->image) }}"
+              alt="Profile Picture" >
+            @else
+            <img 
+              class="h-10 w-10 rounded-full object-cover"
+              src="{{ asset('storage/profile_photo/'. 'placeholder.jpg') }}"
+              alt="Profile Picture">
+            @endif
+            </div>
             <!-- /User Avatar -->
 
             <!-- Content -->
@@ -102,6 +114,33 @@
     <!-- Create Post Card Bottom -->
     <div>
         <!-- Card Bottom Action Buttons -->
+         <!-- Upload Picture Button -->
+         <div>
+                <input
+                  type="file"
+                  name="picture"
+                  id="picture"
+                  class="hidden" />
+
+                <label
+                  for="picture"
+                  class="-m-2 flex gap-2 text-xs items-center rounded-full p-2 text-gray-600 hover:text-gray-800 cursor-pointer">
+                  <span class="sr-only">Picture</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-6 h-6">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                </label>
+              </div>
+              <!-- /Upload Picture Button -->
         <div class="flex items-center justify-between">
             <div class="flex gap-4 text-gray-600">
                 <!-- Upload Picture Button -->
@@ -153,6 +192,7 @@
 
 @if($total_post ==! 0)
 @foreach($user_info as $user_info)
+@foreach($post_info as $post_info)
 <article
         class="bg-white border-2 border-black rounded-lg shadow mx-auto max-w-none px-4 py-5 sm:px-6">
         <!-- Barta Card Top -->
@@ -160,12 +200,19 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center space-x-3">
               <!-- User Avatar -->
-              <!--                <div class="flex-shrink-0">-->
-              <!--                  <img-->
-              <!--                    class="h-10 w-10 rounded-full object-cover"-->
-              <!--                    src="https://avatars.githubusercontent.com/u/831997"-->
-              <!--                    alt="Tony Stark" />-->
-              <!--                </div>-->
+              <div class="flex-shrink-0">
+                    @if ($user_info->image)
+                    <img  
+                      class="h-10 w-10 rounded-full object-cover"
+                      src="{{ asset('storage/profile_photo/'. $user_info->image) }}"
+                      alt="{{$user_info->firstname}}">
+                    @else
+                    <img 
+                      class="h-10 w-10 rounded-full object-cover"
+                      src="{{ asset('storage/profile_photo/'. 'placeholder.jpg') }}"
+                      alt="{{$user_info->firstname}}">
+                    @endif
+                </div>
               <!-- /User Avatar -->
 
               <!-- User Info -->
@@ -186,9 +233,9 @@
               </div>
               <!-- /User Info -->
             </div>
-
+            
             <!-- Card Action Dropdown -->
-            @if($current_user_id == $user_info->user_id)
+            @if($current_user_id == $post_info->user_id)
             <div
               class="flex flex-shrink-0 self-center"
               x-data="{ open: false }">
@@ -220,7 +267,7 @@
                   aria-labelledby="user-menu-button"
                   tabindex="-1">
                   <a
-                    href="{{('/edit-post/'.$user_info->post_uuid)}}"
+                    href="{{('/edit-post/'.$post_info->post_uuid)}}"
                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     role="menuitem"
                     tabindex="-1"
@@ -228,7 +275,7 @@
                     >Edit</a
                   >
                   <a
-                    href="{{('/delete-post/'.$user_info->post_uuid)}}"
+                    href="{{('/delete-post/'.$post_info->post_uuid)}}"
                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     role="menuitem"
                     tabindex="-1"
@@ -242,20 +289,23 @@
             <!-- /Card Action Dropdown -->
           </div>
         </header>
-
         <!-- Content -->
-        <a href="{{url('single-post/'.$user_info->post_uuid)}}">
+        <img
+                  src="{{ asset('storage/post_photos/' . $post_info->image) }}"
+                  class="min-h-auto w-full rounded-lg object-cover max-h-64 md:max-h-72"
+                  alt="" />
+        <a href="{{url('single-post/'.$post_info->post_uuid)}}">
           <div class="py-4 text-gray-700 font-normal">
             <p>
-            {{$user_info->description }}
+            {{$post_info->description }}
             </p>
           </div>
         </a>
         <!-- Date Created & View Stat -->
         <div class="flex items-center gap-2 text-gray-500 text-xs my-2">
-          <span class="">{{ \Carbon\Carbon::parse($user_info->created_at)->diffForHumans() }}</span>
+          <span class="">{{ \Carbon\Carbon::parse($post_info->created_at)->diffForHumans() }}</span>
           <span class="">•</span>
-          <span> {{$user_info->view_count}} views</span>
+          <span> {{$post_info->view_count}} views</span>
         </div>
 
         <!-- Barta Card Bottom -->
@@ -265,7 +315,7 @@
             <div class="flex gap-8 text-gray-600">
               <!-- Comment Button -->
               <a 
-              href="{{url('single-post/'.$user_info->post_uuid)}}"
+              href="{{url('single-post/'.$post_info->post_uuid)}}"
               >
               <button
                 type="button"
@@ -283,7 +333,7 @@
                     stroke-linejoin="round"
                     d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
                 </svg>
-                <p>{{$user_info->total_comment }}</p>
+                <p>{{$post_info->total_comment }}</p>
               </button>
               </a>
               <!-- /Comment Button -->
@@ -295,6 +345,7 @@
       </article> 
       <!-- /Barta Card -->
       <!-- User Specific Posts Feed -->
+@endforeach
 @endforeach
 @endif
       <!-- User Specific Posts Feed -->

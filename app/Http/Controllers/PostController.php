@@ -6,22 +6,39 @@ use Illuminate\Http\Request;
 use DB;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\Post;
+use App\Models\Comment;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
-    public function StorePost(Request $request, $uuid)
+    public function StorePost(Request $request, $user_uuid)
     {
-        $user_id = DB::table('users')
-                       ->where('uuid', '=', $uuid)
-                       ->get('id');
-        $user_id  =$user_id ->pluck('id')->first();
+        $user_id = User::where('user_uuid', '=', $user_uuid)
+                       ->value('id');
 
-        $uuid = Uuid::uuid4()->toString();
-        DB::table('posts')->insert([
-            'user_id' => $user_id,
-            'uuid' => $uuid,
-            'description' => implode($request->all('barta')),
-        ]);
+        $post_uuid = Uuid::uuid4()->toString();
+
+        if($request->file('picture'))
+        {
+            $path = Storage::putFile('public/post_photos', $request->file('picture'));
+            $image_name = str_replace('public/post_photos/', '', $path);
+
+            Post::create([
+                'user_id' => $user_id,
+                'post_uuid' => $post_uuid,
+                'description' => implode($request->all('barta')),
+                'image' => $image_name,
+            ]);
+        }else
+        {
+            Post::create([
+                'user_id' => $user_id,
+                'post_uuid' => $post_uuid,
+                'description' => implode($request->all('barta')),
+            ]);
+        }
 
         echo "<h2>Successfully You Post</h2>";           
         ob_flush();
@@ -32,48 +49,40 @@ class PostController extends Controller
     
     public function SinglePost()
     {
-        $uuid = request()->uuid;
-        $data = DB::table('posts')
-                    ->join('users', 'posts.user_id', '=', 'users.id')
-                    ->select('posts.id AS post_id', 'posts.description', 'posts.view_count', 'users.id AS user_id', 'users.uuid AS user_uuid', 'posts.uuid', 'users.firstname', 'users.lastname', 'users.user_name', DB::raw('CAST(posts.created_at AS datetime) as created_at'))
-                    ->where('posts.uuid', $uuid)
-                    ->orderBy('posts.created_at', 'desc')
-                    ->get();  
+        $post_uuid = request()->post_uuid;
+        $data =  Post::with('user')
+                     ->where('posts.post_uuid', $post_uuid)
+                     ->orderBy('posts.created_at', 'desc')
+                     ->get();                     
 
-        $post_id = DB::table('posts')->where('uuid', $uuid)->value('id');
-        $comment_data = DB::table('comments')
-                       ->where('post_id', $post_id)
-                       ->join('users', 'comments.user_id', '=', 'users.id')
-                       ->select('comments.id','comments.user_id','comments.description', 'comments.created_at', 'users.uuid', 'users.firstname', 'users.lastname', 'users.user_name')
-                       ->orderBy('comments.created_at', 'desc')
-                       ->get(); 
+        $post_id =Post::where('post_uuid', $post_uuid)->value('id');
+        
+        $comment_data = Comment::with('user')
+                                ->where('post_id', $post_id)
+                                ->orderBy('comments.created_at', 'desc')
+                                ->get(); 
                        
-        $total_comment = DB::table('comments')
-                            ->where('post_id', $post_id)
+        $total_comment = Comment::where('post_id', $post_id)
                             ->count();  
 
                         //insert total comment    
-                        DB::table('posts')
-                            ->where('id', $post_id)
+                        Post::where('id', $post_id)
                             ->update(['total_comment' => $total_comment]);
 
         $current_user_id = Auth::user()->id;
 
         // Check if the user has already viewed the post
-        $hasViewed = DB::table('posts')
-            ->where('id',$post_id)
-            ->where('viewed_by', $current_user_id)
-            ->exists();
+        $hasViewed = Post::where('id',$post_id)
+                          ->where('viewed_by', $current_user_id)
+                          ->exists();
 
         if (!$hasViewed) {
             // Update view count and mark the post as viewed by the user
-            DB::table('posts')
-                ->where('id', $post_id)
-                ->increment('view_count');
+            Post::where('id', $post_id)
+                 ->increment('view_count');
 
-            DB::table('posts')
-                ->where('id', $post_id)
-                ->update(['viewed_by' => $current_user_id]);
+            Post::where('id', $post_id)
+                 ->update(['viewed_by' => $current_user_id]);
             }       
         return view('single-post')
                     ->with('data', $data)
@@ -81,28 +90,44 @@ class PostController extends Controller
                     ->with('total_comment', $total_comment)
                     ->with('current_user_id', $current_user_id)
                     ->withSuccess('You have Successfully loggedin');
- 
     }
 
     public function EditPost()
     {
-        $uuid = request()->uuid;
-        $data = DB::table('posts')
-                      ->where('uuid', $uuid)
-                      ->get(['description', 'uuid']);
+        $post_uuid = request()->post_uuid;
+
+        $data = Post::with('user')
+                    ->where('post_uuid', $post_uuid)
+                    ->get();
+
         return view('edit-post')->with('data', $data);
 
     }  
 
-    public function StoreEditPost()
+    public function StoreEditPost(Request $request)
     {
-        $uuid = request()->uuid;
+        $post_uuid = request()->post_uuid;
         $description = request()->barta;
-        $data = DB::table('posts')
-                    ->where('uuid', $uuid)
+
+        $old_image = Post::where('post_uuid', $post_uuid)->value('image'); 
+         
+
+        if( $new_image = $request->file('picture') )
+        {
+            Storage::delete('public/post_photos/' . $old_image);
+
+            $path = Storage::putFile('public/post_photos', $new_image);
+            $image_name = str_replace('public/post_photos/', '', $path);
+        }else
+        {
+            $image_name = $old_image;
+        }
+        
+        Post::where('post_uuid', $post_uuid)
                     ->update([
-                        'description' => $description
-                    ]);
+                    'description' => $description,
+                    'image' => $image_name,
+                ]);
 
         echo "<h2>Your Post Updated Successfully</h2>";           
         ob_flush();
@@ -113,10 +138,15 @@ class PostController extends Controller
 
     public function DeletePost()
     {
-        $uuid = request()->uuid;
-        $data = DB::table('posts')
-                ->where('uuid', $uuid)
-                ->delete();
+        $post_uuid = request()->post_uuid;
+
+        $image = Post::where('post_uuid', $post_uuid)->value('image');
+
+        Storage::delete('public/post_photos/' . $image);
+
+        Post::where('post_uuid', $post_uuid)
+                     ->delete();
+
         return redirect('/');      
     }
 

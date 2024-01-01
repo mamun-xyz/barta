@@ -26,8 +26,10 @@ class AuthServiceProvider extends ServiceProvider
             if (Auth::check()) 
             {
                 $currentUser = Auth::user();
-                $logged_in_user_uuid = $currentUser->uuid;
-                $view->with('logged_in_user_uuid', $logged_in_user_uuid);
+                $uuid = $currentUser->user_uuid;
+                $image = $currentUser->image;
+                $view->with('logged_in_user_uuid', $uuid)->with('logged_in_user_image', $image);
+
             } 
         });
     }

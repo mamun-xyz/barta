@@ -11,20 +11,27 @@ use App\Http\Controllers\UpdateProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\CommentController;
+use App\Http\Controllers\SearchController;
 
-
+// Home Routes
 Route::get('/', [HomeController::class, 'Home']);
 
-Route::get('/profile/{uuid}', [ProfileController::class, 'Profile']);
-Route::get('/profile/edit/{uuid}', [EditProfileController::class, 'EditProfile'])->middleware('valid.editor');
-Route::post('/profile/edit-post/{uuid}', [UpdateProfileController::class, 'UpdateInfo']);
+// Search Routes
+Route::get('/search', [SearchController::class, 'Search']);
 
-Route::post('/post/store/{uuid}', [PostController::class, 'StorePost']);
-Route::get('/single-post/{uuid}', [PostController::class, 'SinglePost']);
-Route::get('/edit-post/{uuid}', [PostController::class, 'EditPost']);
-Route::post('/edit-post/store/{uuid}', [PostController::class, 'StoreEditPost']);
-Route::get('/delete-post/{uuid}', [PostController::class, 'DeletePost']);
+// Profile Routes
+Route::get('/profile/{user_uuid}', [ProfileController::class, 'Profile']);
+Route::get('/profile/edit/{user_uuid}', [EditProfileController::class, 'EditProfile'])->middleware('valid.editor');
+Route::post('/profile/edit-store/{user_uuid}', [UpdateProfileController::class, 'UpdateInfo']);
 
+// Post Routes
+Route::post('/post/store/{user_uuid}', [PostController::class, 'StorePost']);
+Route::get('/single-post/{post_uuid}', [PostController::class, 'SinglePost']);
+Route::get('/edit-post/{post_uuid}', [PostController::class, 'EditPost']);
+Route::post('/edit-post/store/{post_uuid}', [PostController::class, 'StoreEditPost']);
+Route::get('/delete-post/{post_uuid}', [PostController::class, 'DeletePost']);
+
+// Comment Routes
 Route::post('/store-comment/{post_id}', [CommentController::class, 'StoreComment']);
 Route::get('/update-comment/{comment_id}', [CommentController::class, 'UpdateComment']);
 Route::post('/store-update-comment/{comment_id}', [CommentController::class, 'StoreUpdateComment']);

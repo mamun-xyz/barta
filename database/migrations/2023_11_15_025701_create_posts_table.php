@@ -15,8 +15,8 @@ return new class extends Migration
 
             $table->id();
             $table->integer('user_id');
-            $table->uuid('uuid'); 
-            $table->text('description');
+            $table->uuid('post_uuid'); 
+            $table->text('description')->nullable();
             $table->bigInteger('view_count')->default(0);
             $table->text('viewed_by')->nullable();
             $table->string('image')->nullable();
